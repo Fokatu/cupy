@@ -1,11 +1,11 @@
 import unittest
 
 import numpy
-import six
 
 import cupy
 from cupy import testing
 from cupy.testing import condition
+import cupyx
 
 
 def random_matrix(shape, dtype, scale, sym=False):
@@ -62,6 +62,23 @@ class TestCholeskyDecomposition(unittest.TestCase):
         self.check_L(numpy.array([[1, 2], [1, 9]], dtype))
 
 
+@testing.gpu
+class TestCholeskyInvalid(unittest.TestCase):
+
+    @testing.numpy_cupy_raises(accept_error=numpy.linalg.LinAlgError)
+    def check_L(self, array, xp):
+        a = xp.asarray(array)
+        with cupyx.errstate(linalg='raise'):
+            xp.linalg.cholesky(a)
+
+    @testing.for_dtypes([
+        numpy.int32, numpy.int64, numpy.uint32, numpy.uint64,
+        numpy.float32, numpy.float64])
+    def test_decomposition(self, dtype):
+        A = numpy.array([[1, -2], [-2, 1]]).astype(dtype)
+        self.check_L(A)
+
+
 @testing.parameterize(*testing.product({
     'mode': ['r', 'raw', 'complete', 'reduced'],
 }))
@@ -75,7 +92,7 @@ class TestQRDecomposition(unittest.TestCase):
         result_cpu = numpy.linalg.qr(a_cpu, mode=mode)
         result_gpu = cupy.linalg.qr(a_gpu, mode=mode)
         if isinstance(result_cpu, tuple):
-            for b_cpu, b_gpu in six.moves.zip(result_cpu, result_gpu):
+            for b_cpu, b_gpu in zip(result_cpu, result_gpu):
                 self.assertEqual(b_cpu.dtype, b_gpu.dtype)
                 cupy.testing.assert_allclose(b_cpu, b_gpu, atol=1e-4)
         else:
@@ -186,3 +203,16 @@ class TestSVD(unittest.TestCase):
     def test_rank2(self):
         self.check_rank2(cupy.random.randn(2, 3, 4).astype(numpy.float32))
         self.check_rank2(cupy.random.randn(1, 2, 3, 4).astype(numpy.float64))
+
+    @testing.with_requires('numpy>=1.16')
+    def test_empty_array(self):
+        self.check_usv((0, 3))
+        self.check_usv((3, 0))
+        self.check_usv((1, 0))
+
+    @testing.with_requires('numpy>=1.16')
+    @testing.numpy_cupy_array_equal()
+    def test_empty_array_compute_uv_false(self, xp):
+        array = xp.empty((3, 0))
+        return xp.linalg.svd(
+            array, full_matrices=self.full_matrices, compute_uv=False)

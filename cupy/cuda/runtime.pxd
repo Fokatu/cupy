@@ -10,8 +10,6 @@ cdef class PointerAttributes:
         public int device
         public intptr_t devicePointer
         public intptr_t hostPointer
-        public int isManaged
-        public int memoryType
 
 
 cdef extern from *:
@@ -280,6 +278,7 @@ cpdef enum:
 cdef extern from '../cuda/cupy_cuda.h':  # thru parent to import in core
     int cudaErrorMemoryAllocation
     int cudaErrorInvalidValue
+    int cudaErrorPeerAccessAlreadyEnabled
 
 ###############################################################################
 # Const value

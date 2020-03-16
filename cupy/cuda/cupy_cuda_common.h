@@ -61,6 +61,7 @@ typedef enum {
     cudaSuccess = 0,
     cudaErrorInvalidValue = 1,
     cudaErrorMemoryAllocation = 2,
+    cudaErrorPeerAccessAlreadyEnabled = 704,
 } cudaError_t;
 typedef enum {} cudaDataType;
 enum cudaDeviceAttr {};
@@ -76,8 +77,6 @@ struct cudaPointerAttributes{
     int device;
     void* devicePointer;
     void* hostPointer;
-    int isManaged;
-    int memoryType;
 };
 
 
@@ -152,6 +151,17 @@ struct cudaTextureDesc {
     float minMipmapLevelClamp;
     float maxMipmapLevelClamp;
 };
+
+
+///////////////////////////////////////////////////////////////////////////////
+// library_types.h
+///////////////////////////////////////////////////////////////////////////////
+
+typedef enum libraryPropertyType_t {
+	MAJOR_VERSION,
+	MINOR_VERSION,
+	PATCH_LEVEL
+} libraryPropertyType;
 
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -107,7 +107,7 @@ cusparseStatus_t cusparseZgtsv2StridedBatch(...) {
 }
 #endif // #if CUDA_VERSION < 9000
 
-#if CUDA_VERSION < 9200
+#if CUDA_VERSION < 9020
 // Functions added in CUDA 9.2
 cusparseStatus_t cusparseSgtsvInterleavedBatch_bufferSizeExt(...) {
   return CUSPARSE_STATUS_SUCCESS;
@@ -172,7 +172,219 @@ cusparseStatus_t cusparseCgpsvInterleavedBatch(...) {
 cusparseStatus_t cusparseZgpsvInterleavedBatch(...) {
   return CUSPARSE_STATUS_SUCCESS;
 }
-#endif // #if CUDA_VERSION < 9200
+
+cusparseStatus_t cusparseScsrgeam2_bufferSizeExt(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDcsrgeam2_bufferSizeExt(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCcsrgeam2_bufferSizeExt(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseZcsrgeam2_bufferSizeExt(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseXcsrgeam2Nnz(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseScsrgeam2(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDcsrgeam2(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCcsrgeam2(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseZcsrgeam2(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+#endif // #if CUDA_VERSION < 9020
+
+#if CUDA_VERSION < 10010
+// Types, macro and functions added in CUDA 10.1
+
+#define CUSPARSE_VERSION CUDA_VERSION // CUDA_VERSION used instead
+
+// cuSPARSE generic API
+typedef void* cusparseSpVecDescr_t;
+typedef void* cusparseDnVecDescr_t;
+typedef void* cusparseSpMatDescr_t;
+typedef void* cusparseDnMatDescr_t;
+
+typedef enum {} cusparseIndexType_t;
+typedef enum {} cusparseFormat_t;
+typedef enum {} cusparseOrder_t;
+typedef enum {} cusparseSpMVAlg_t;
+typedef enum {} cusparseSpMMAlg_t;
+
+cusparseStatus_t cusparseCreateSpVec(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDestroySpVec(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpVecGet(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpVecGetIndexBase(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpVecGetValues(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpVecSetValues(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCreateCoo(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCreateCooAoS(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCreateCsr(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDestroySpMat(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCooGet(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCooAoSGet(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCsrGet(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMatGetFormat(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMatGetIndexBase(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMatGetValues(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMatSetValues(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMatGetStridedBatch(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMatSetStridedBatch(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCreateDnVec(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDestroyDnVec(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDnVecGet(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDnVecGetValues(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDnVecSetValues(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCreateDnMat(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDestroyDnMat(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDnMatGet(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDnMatGetValues(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDnMatSetValues(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDnMatGetStridedBatch(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDnMatSetStridedBatch(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpVV_bufferSize(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpVV(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMV_bufferSize(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMV(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMM_bufferSize(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMM(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseConstrainedGeMM_bufferSize(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseConstrainedGeMM(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+#endif //CUDA_VERSION < 10010
 
 #else  // #if !defined(CUPY_NO_CUDA) && !defined(CUPY_USE_HIP)
 
@@ -195,6 +407,7 @@ typedef void* csric02Info_t;
 typedef void* bsric02Info_t;
 typedef void* csrilu02Info_t;
 typedef void* bsrilu02Info_t;
+typedef void* csrgemm2Info_t;
 
 typedef enum {} cusparseMatrixType_t;
 typedef enum {} cusparseOperation_t;
@@ -203,6 +416,11 @@ typedef enum {} cusparseAction_t;
 typedef enum {} cusparseDirection_t;
 typedef enum {} cusparseAlgMode_t;
 typedef enum {} cusparseSolvePolicy_t;
+
+// Version
+cusparseStatus_t cusparseGetVersion(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
 
 // cuSPARSE Helper Function
 cusparseStatus_t cusparseCreate(...) {
@@ -339,6 +557,41 @@ cusparseStatus_t cusparseZcsrgeam(...) {
   return CUSPARSE_STATUS_SUCCESS;
 }
 
+cusparseStatus_t cusparseScsrgeam2_bufferSizeExt(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDcsrgeam2_bufferSizeExt(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCcsrgeam2_bufferSizeExt(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseZcsrgeam2_bufferSizeExt(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseXcsrgeam2Nnz(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseScsrgeam2(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDcsrgeam2(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCcsrgeam2(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseZcsrgeam2(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
 
 cusparseStatus_t cusparseXcsrgemmNnz(...) {
   return CUSPARSE_STATUS_SUCCESS;
@@ -357,6 +610,50 @@ cusparseStatus_t cusparseCcsrgemm(...) {
 }
 
 cusparseStatus_t cusparseZcsrgemm(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCreateCsrgemm2Info(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDestroyCsrgemm2Info(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseScsrgemm2_bufferSizeExt(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDcsrgemm2_bufferSizeExt(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCcsrgemm2_bufferSizeExt(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseZcsrgemm2_bufferSizeExt(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseXcsrgemm2Nnz(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseScsrgemm2(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDcsrgemm2(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCcsrgemm2(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseZcsrgemm2(...) {
   return CUSPARSE_STATUS_SUCCESS;
 }
 
@@ -564,22 +861,6 @@ cusparseStatus_t cusparseZcsrilu02_bufferSize(...) {
   return CUSPARSE_STATUS_SUCCESS;
 }
 
-cusparseStatus_t cusparseScsrilu02_bufferSizeExt(...) {
-  return CUSPARSE_STATUS_SUCCESS;
-}
-
-cusparseStatus_t cusparseDcsrilu02_bufferSizeExt(...) {
-  return CUSPARSE_STATUS_SUCCESS;
-}
-
-cusparseStatus_t cusparseCcsrilu02_bufferSizeExt(...) {
-  return CUSPARSE_STATUS_SUCCESS;
-}
-
-cusparseStatus_t cusparseZcsrilu02_bufferSizeExt(...) {
-  return CUSPARSE_STATUS_SUCCESS;
-}
-
 cusparseStatus_t cusparseScsrilu02_analysis(...) {
   return CUSPARSE_STATUS_SUCCESS;
 }
@@ -648,22 +929,6 @@ cusparseStatus_t cusparseZbsrilu02_bufferSize(...) {
   return CUSPARSE_STATUS_SUCCESS;
 }
 
-cusparseStatus_t cusparseSbsrilu02_bufferSizeExt(...) {
-  return CUSPARSE_STATUS_SUCCESS;
-}
-
-cusparseStatus_t cusparseDbsrilu02_bufferSizeExt(...) {
-  return CUSPARSE_STATUS_SUCCESS;
-}
-
-cusparseStatus_t cusparseCbsrilu02_bufferSizeExt(...) {
-  return CUSPARSE_STATUS_SUCCESS;
-}
-
-cusparseStatus_t cusparseZbsrilu02_bufferSizeExt(...) {
-  return CUSPARSE_STATUS_SUCCESS;
-}
-
 cusparseStatus_t cusparseSbsrilu02_analysis(...) {
   return CUSPARSE_STATUS_SUCCESS;
 }
@@ -716,22 +981,6 @@ cusparseStatus_t cusparseZcsric02_bufferSize(...) {
   return CUSPARSE_STATUS_SUCCESS;
 }
 
-cusparseStatus_t cusparseScsric02_bufferSizeExt(...) {
-  return CUSPARSE_STATUS_SUCCESS;
-}
-
-cusparseStatus_t cusparseDcsric02_bufferSizeExt(...) {
-  return CUSPARSE_STATUS_SUCCESS;
-}
-
-cusparseStatus_t cusparseCcsric02_bufferSizeExt(...) {
-  return CUSPARSE_STATUS_SUCCESS;
-}
-
-cusparseStatus_t cusparseZcsric02_bufferSizeExt(...) {
-  return CUSPARSE_STATUS_SUCCESS;
-}
-
 cusparseStatus_t cusparseScsric02_analysis(...) {
   return CUSPARSE_STATUS_SUCCESS;
 }
@@ -781,22 +1030,6 @@ cusparseStatus_t cusparseCbsric02_bufferSize(...) {
 }
 
 cusparseStatus_t cusparseZbsric02_bufferSize(...) {
-  return CUSPARSE_STATUS_SUCCESS;
-}
-
-cusparseStatus_t cusparseSbsric02_bufferSizeExt(...) {
-  return CUSPARSE_STATUS_SUCCESS;
-}
-
-cusparseStatus_t cusparseDbsric02_bufferSizeExt(...) {
-  return CUSPARSE_STATUS_SUCCESS;
-}
-
-cusparseStatus_t cusparseCbsric02_bufferSizeExt(...) {
-  return CUSPARSE_STATUS_SUCCESS;
-}
-
-cusparseStatus_t cusparseZbsric02_bufferSizeExt(...) {
   return CUSPARSE_STATUS_SUCCESS;
 }
 
@@ -989,6 +1222,176 @@ cusparseStatus_t cusparseCgpsvInterleavedBatch(...) {
 }
 
 cusparseStatus_t cusparseZgpsvInterleavedBatch(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+#define CUSPARSE_VERSION -1
+
+// cuSPARSE generic API
+typedef void* cusparseSpVecDescr_t;
+typedef void* cusparseDnVecDescr_t;
+typedef void* cusparseSpMatDescr_t;
+typedef void* cusparseDnMatDescr_t;
+
+typedef enum {} cusparseIndexType_t;
+typedef enum {} cusparseFormat_t;
+typedef enum {} cusparseOrder_t;
+typedef enum {} cusparseSpMVAlg_t;
+typedef enum {} cusparseSpMMAlg_t;
+
+cusparseStatus_t cusparseCreateSpVec(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDestroySpVec(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpVecGet(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpVecGetIndexBase(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpVecGetValues(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpVecSetValues(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCreateCoo(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCreateCooAoS(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCreateCsr(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDestroySpMat(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCooGet(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCooAoSGet(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCsrGet(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMatGetFormat(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMatGetIndexBase(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMatGetValues(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMatSetValues(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMatGetStridedBatch(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMatSetStridedBatch(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCreateDnVec(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDestroyDnVec(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDnVecGet(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDnVecGetValues(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDnVecSetValues(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseCreateDnMat(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDestroyDnMat(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDnMatGet(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDnMatGetValues(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDnMatSetValues(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDnMatGetStridedBatch(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseDnMatSetStridedBatch(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpVV_bufferSize(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpVV(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMV_bufferSize(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMV(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMM_bufferSize(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseSpMM(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseConstrainedGeMM_bufferSize(...) {
+  return CUSPARSE_STATUS_SUCCESS;
+}
+
+cusparseStatus_t cusparseConstrainedGeMM(...) {
   return CUSPARSE_STATUS_SUCCESS;
 }
 

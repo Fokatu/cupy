@@ -1,6 +1,7 @@
 import unittest
 
 import numpy
+import pytest
 
 import cupy
 from cupy import testing
@@ -51,20 +52,34 @@ class TestShape(unittest.TestCase):
         a = testing.shaped_arange((2, 3, 4), xp)
         return a.reshape(3, -1, order=order)
 
-    @testing.numpy_cupy_raises()
     def test_reshape_with_multiple_unknown_dimensions(self):
-        a = testing.shaped_arange((2, 3, 4))
-        a.reshape(3, -1, -1)
+        for xp in (numpy, cupy):
+            a = testing.shaped_arange((2, 3, 4), xp)
+            with pytest.raises(ValueError):
+                a.reshape(3, -1, -1)
 
-    @testing.numpy_cupy_raises()
     def test_reshape_with_changed_arraysize(self):
-        a = testing.shaped_arange((2, 3, 4))
-        a.reshape(2, 4, 4)
+        for xp in (numpy, cupy):
+            a = testing.shaped_arange((2, 3, 4), xp)
+            with pytest.raises(ValueError):
+                a.reshape(2, 4, 4)
 
-    @testing.numpy_cupy_raises()
     def test_reshape_invalid_order(self):
-        a = testing.shaped_arange((2, 3, 4))
-        a.reshape(2, 4, 4, order='K')
+        for xp in (numpy, cupy):
+            a = testing.shaped_arange((2, 3, 4), xp)
+            with pytest.raises(ValueError):
+                a.reshape(2, 4, 4, order='K')
+
+    def test_reshape_empty_invalid(self):
+        for xp in (numpy, cupy):
+            a = testing.empty(xp)
+            with pytest.raises(ValueError):
+                a.reshape(())
+
+    @testing.numpy_cupy_array_equal()
+    def test_reshape_empty(self, xp):
+        a = testing.empty(xp)
+        return a.reshape((0,))
 
     @testing.for_orders('CFA')
     @testing.numpy_cupy_array_equal()
@@ -109,7 +124,6 @@ class TestShape(unittest.TestCase):
 @testing.gpu
 class TestReshapeOrder(unittest.TestCase):
 
-    @testing.with_requires('numpy>=1.12')
     def test_reshape_contiguity(self):
         shape_init, shape_final = self.shape_in_out
 

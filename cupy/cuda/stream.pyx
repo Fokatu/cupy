@@ -2,23 +2,24 @@ from cupy.cuda import runtime
 import threading
 import weakref
 
+from cupy import util
+
 
 cdef object _thread_local = threading.local()
 
 
-cdef class _StreamThreadLocal:
+cdef class _ThreadLocal:
     cdef void* current_stream
     cdef object current_stream_ref
     cdef list prev_stream_ref_stack
 
     @staticmethod
-    cdef _StreamThreadLocal get():
-        tls = getattr(_thread_local, 'tls', None)
-        if tls is None:
-            c_tls = _StreamThreadLocal()
-            _thread_local.tls = c_tls
-            return c_tls
-        return <_StreamThreadLocal>tls
+    cdef _ThreadLocal get():
+        try:
+            tls = _thread_local.tls
+        except AttributeError:
+            tls = _thread_local.tls = _ThreadLocal()
+        return <_ThreadLocal>tls
 
     cdef set_current_stream(self, stream):
         self.current_stream = <void*><intptr_t>stream.ptr
@@ -51,7 +52,7 @@ cdef intptr_t get_current_stream_ptr():
     Returns:
         intptr_t: The current CUDA stream pointer.
     """
-    tls = _StreamThreadLocal.get()
+    tls = _ThreadLocal.get()
     return <intptr_t>tls.get_current_stream_ptr()
 
 
@@ -61,7 +62,7 @@ cpdef get_current_stream():
     Returns:
         cupy.cuda.Stream: The current CUDA stream.
     """
-    tls = _StreamThreadLocal.get()
+    tls = _ThreadLocal.get()
     return tls.get_current_stream()
 
 
@@ -96,7 +97,9 @@ class Event(object):
                 (interprocess and runtime.eventInterprocess))
         self.ptr = runtime.eventCreateWithFlags(flag)
 
-    def __del__(self):
+    def __del__(self, is_shutting_down=util.is_shutting_down):
+        if is_shutting_down():
+            return
         if self.ptr:
             runtime.eventDestroy(self.ptr)
 
@@ -145,20 +148,9 @@ def get_elapsed_time(start_event, end_event):
     return runtime.eventElapsedTime(start_event.ptr, end_event.ptr)
 
 
-class Stream(object):
+class BaseStream(object):
 
     """CUDA stream.
-
-    This class handles the CUDA stream handle in RAII way, i.e., when an Stream
-    instance is destroyed by the GC, its handle is also destroyed.
-
-    Args:
-        null (bool): If ``True``, the stream is a null stream (i.e. the default
-            stream that synchronizes with all streams). Otherwise, a plain new
-            stream is created. Note that you can also use ``Stream.null``
-            singleton object instead of creating new null stream object.
-        non_blocking (bool): If ``True``, the stream does not synchronize with
-            the NULL stream.
 
     Attributes:
         ~Stream.ptr (intptr_t): Raw stream handle. It can be passed to
@@ -168,25 +160,6 @@ class Stream(object):
 
     null = None
 
-    def __init__(self, null=False, non_blocking=False):
-        if null:
-            self.ptr = 0
-        elif non_blocking:
-            self.ptr = runtime.streamCreateWithFlags(runtime.streamNonBlocking)
-        else:
-            self.ptr = runtime.streamCreate()
-
-    def __del__(self):
-        cdef intptr_t current_ptr
-        if self.ptr:
-            tls = _StreamThreadLocal.get()
-            current_ptr = <intptr_t>tls.get_current_stream_ptr()
-            if <intptr_t>self.ptr == current_ptr:
-                tls.set_current_stream(self.null)
-            runtime.streamDestroy(self.ptr)
-        # Note that we can not release memory pool of the stream held in CPU
-        # because the memory would still be used in kernels executed in GPU.
-
     def __eq__(self, other):
         # This operator is implemented to compare the singleton instance
         # of null stream (Stream.null) can safely be compared with null
@@ -194,7 +167,7 @@ class Stream(object):
         return self.ptr == other.ptr
 
     def __enter__(self):
-        tls = _StreamThreadLocal.get()
+        tls = _ThreadLocal.get()
         if tls.prev_stream_ref_stack is None:
             tls.prev_stream_ref_stack = []
         prev_stream_ref = tls.get_current_stream_ref()
@@ -203,7 +176,7 @@ class Stream(object):
         return self
 
     def __exit__(self, *args):
-        tls = _StreamThreadLocal.get()
+        tls = _ThreadLocal.get()
         prev_stream_ref = tls.prev_stream_ref_stack.pop()
         tls.set_current_stream_ref(prev_stream_ref)
         pass
@@ -213,7 +186,7 @@ class Stream(object):
 
         If you want to switch a stream temporarily, use the *with* statement.
         """
-        tls = _StreamThreadLocal.get()
+        tls = _ThreadLocal.get()
         tls.set_current_stream(self)
         return self
 
@@ -268,6 +241,70 @@ class Stream(object):
 
         """
         runtime.streamWaitEvent(self.ptr, event.ptr)
+
+
+class Stream(BaseStream):
+
+    """CUDA stream.
+
+    This class handles the CUDA stream handle in RAII way, i.e., when an Stream
+    instance is destroyed by the GC, its handle is also destroyed.
+
+    Args:
+        null (bool): If ``True``, the stream is a null stream (i.e. the default
+            stream that synchronizes with all streams). Otherwise, a plain new
+            stream is created. Note that you can also use ``Stream.null``
+            singleton object instead of creating new null stream object.
+        non_blocking (bool): If ``True``, the stream does not synchronize with
+            the NULL stream.
+
+    Attributes:
+        ~Stream.ptr (intptr_t): Raw stream handle. It can be passed to
+            the CUDA Runtime API via ctypes.
+
+    """
+
+    def __init__(self, null=False, non_blocking=False):
+        if null:
+            self.ptr = 0
+        elif non_blocking:
+            self.ptr = runtime.streamCreateWithFlags(runtime.streamNonBlocking)
+        else:
+            self.ptr = runtime.streamCreate()
+
+    def __del__(self, is_shutting_down=util.is_shutting_down):
+        cdef intptr_t current_ptr
+        if is_shutting_down():
+            return
+        if self.ptr:
+            tls = _ThreadLocal.get()
+            current_ptr = <intptr_t>tls.get_current_stream_ptr()
+            if <intptr_t>self.ptr == current_ptr:
+                tls.set_current_stream(self.null)
+            runtime.streamDestroy(self.ptr)
+        # Note that we can not release memory pool of the stream held in CPU
+        # because the memory would still be used in kernels executed in GPU.
+
+
+class ExternalStream(BaseStream):
+
+    """CUDA stream.
+
+    This class allows to use external streams in CuPy by providing the
+    stream pointer obtained from the CUDA runtime call.
+    The user is in charge of managing the life-cycle of the stream.
+
+    Args:
+        ptr (intptr_t): Address of the `cudaStream_t` object.
+
+    Attributes:
+        ~Stream.ptr (intptr_t): Raw stream handle. It can be passed to
+            the CUDA Runtime API via ctypes.
+
+    """
+
+    def __init__(self, ptr):
+        self.ptr = ptr
 
 
 Stream.null = Stream(null=True)

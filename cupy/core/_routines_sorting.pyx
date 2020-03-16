@@ -3,7 +3,6 @@ import string
 import numpy
 
 import cupy
-from cupy.core import _errors
 from cupy.core._scalar import get_typename as _get_typename
 from cupy.core._ufuncs import elementwise_copy
 from cupy import util
@@ -28,8 +27,8 @@ cdef _ndarray_sort(ndarray self, int axis):
                            'reinstall CuPy after uninstalling it.')
 
     if ndim == 0:
-        raise ValueError('Sorting arrays with the rank of zero is not '
-                         'supported')  # as numpy.sort() raises
+        raise numpy.AxisError('Sorting arrays with the rank of zero is not '
+                              'supported')  # as numpy.sort() raises
 
     # TODO(takagi): Support sorting views
     if not self._c_contiguous:
@@ -39,7 +38,7 @@ cdef _ndarray_sort(ndarray self, int axis):
     if axis < 0:
         axis += ndim
     if not (0 <= axis < ndim):
-        raise _errors._AxisError('Axis out of range')
+        raise numpy.AxisError('Axis out of range')
 
     if axis == ndim - 1:
         data = self
@@ -61,7 +60,7 @@ cdef _ndarray_sort(ndarray self, int axis):
 
 
 cdef ndarray _ndarray_argsort(ndarray self, axis):
-    cdef int _axis, ndim = self._shape.size()
+    cdef int _axis, ndim
     cdef ndarray data
 
     if not cupy.cuda.thrust_enabled:
@@ -69,9 +68,8 @@ cdef ndarray _ndarray_argsort(ndarray self, axis):
                            'install CUDA Toolkit with Thrust then '
                            'reinstall CuPy after uninstalling it.')
 
-    if ndim == 0:
-        raise ValueError('Sorting arrays with the rank of zero is not '
-                         'supported')  # as numpy.argsort() raises
+    self = cupy.atleast_1d(self)
+    ndim = self._shape.size()
 
     if axis is None:
         data = self.ravel()
@@ -83,7 +81,7 @@ cdef ndarray _ndarray_argsort(ndarray self, axis):
     if _axis < 0:
         _axis += ndim
     if not (0 <= _axis < ndim):
-        raise _errors._AxisError('Axis out of range')
+        raise numpy.AxisError('Axis out of range')
 
     if _axis == ndim - 1:
         data = data.copy()
@@ -133,8 +131,8 @@ cdef _ndarray_partition(ndarray self, kth, int axis):
     cdef ndarray data
 
     if ndim == 0:
-        raise ValueError('Sorting arrays with the rank of zero is not '
-                         'supported')
+        raise numpy.AxisError('Sorting arrays with the rank of zero is not '
+                              'supported')
 
     if not self._c_contiguous:
         raise NotImplementedError('Sorting non-contiguous array is not '
@@ -143,7 +141,7 @@ cdef _ndarray_partition(ndarray self, kth, int axis):
     if axis < 0:
         axis += ndim
     if not (0 <= axis < ndim):
-        raise _errors._AxisError('Axis out of range')
+        raise numpy.AxisError('Axis out of range')
 
     if axis == ndim - 1:
         data = self
@@ -240,7 +238,7 @@ cdef ndarray _ndarray_argpartition(self, kth, axis):
     if _axis < 0:
         _axis += ndim
     if not (0 <= _axis < ndim):
-        raise _errors._AxisError('Axis out of range')
+        raise numpy.AxisError('Axis out of range')
 
     length = data._shape[_axis]
     if isinstance(kth, int):

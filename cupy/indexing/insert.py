@@ -1,6 +1,7 @@
 import numpy
 
 import cupy
+from cupy import core
 
 
 def place(arr, mask, vals):
@@ -25,14 +26,19 @@ def place(arr, mask, vals):
     array([[ 0,  1,  2],
            [44, 55, 44]])
 
+    .. warning::
+
+        This function may synchronize the device.
+
     .. seealso:: :func:`numpy.place`
     """
+    # TODO(niboshi): Avoid nonzero which may synchronize the device.
     mask = cupy.asarray(mask)
     if arr.size != mask.size:
         raise ValueError('Mask and data must be the same size.')
     vals = cupy.asarray(vals)
 
-    mask_indices = mask.ravel().nonzero()[0]
+    mask_indices = mask.ravel().nonzero()[0]  # may synchronize
     if mask_indices.size == 0:
         return
     if vals.size == 0:
@@ -64,6 +70,12 @@ def put(a, ind, v, mode='wrap'):
 # TODO(okuta): Implement putmask
 
 
+_fill_diagonal_kernel = core.ElementwiseKernel(
+    'int64 start, int64 step, raw T val', 'raw T a',
+    'a[start + i * step] = val[i % val.size()]',
+    'cupy_fill_diagonal')
+
+
 def fill_diagonal(a, val, wrap=False):
     """Fills the main diagonal of the given array of any dimensionality.
 
@@ -92,7 +104,7 @@ def fill_diagonal(a, val, wrap=False):
     # The followings are imported from the original numpy
     if a.ndim < 2:
         raise ValueError('array must be at least 2-d')
-    end = None
+    end = a.size
     if a.ndim == 2:
         step = a.shape[1] + 1
         if not wrap:
@@ -102,6 +114,7 @@ def fill_diagonal(a, val, wrap=False):
             raise ValueError('All dimensions of input must be of equal length')
         step = 1 + numpy.cumprod(a.shape[:-1]).sum()
 
-    # Since the current cupy does not support a.flat,
-    # we use a.ravel() instead of a.flat
-    a.ravel()[:end:step] = val
+    val = cupy.asarray(val, dtype=a.dtype)
+
+    size = end // step + 1
+    _fill_diagonal_kernel(0, step, val, a, size=size)
