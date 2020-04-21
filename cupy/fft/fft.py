@@ -167,7 +167,10 @@ def _fft(a, s, axes, norm, direction, value_type='C2C', overwrite_x=False,
     else:
         axes = tuple(axes)
     if not axes:
-        return a
+        if value_type == 'C2C':
+            return a
+        else:
+            raise IndexError('list index out of range')
     a = _convert_dtype(a, value_type)
     a = _cook_shape(a, s, axes, value_type)
 
@@ -359,9 +362,6 @@ def _exec_fftn(a, direction, value_type, norm, axes, overwrite_x,
     if fft_type not in [cufft.CUFFT_C2C, cufft.CUFFT_Z2Z]:
         raise NotImplementedError('Only C2C and Z2Z are supported.')
 
-    if a.base is not None:
-        a = a.copy()
-
     if a.flags.c_contiguous:
         order = 'C'
     elif a.flags.f_contiguous:
@@ -420,7 +420,10 @@ def _fftn(a, s, axes, norm, direction, value_type='C2C', order='A', plan=None,
 
     axes, axes_sorted = _prep_fftn_axes(a.ndim, s, axes)
     if not axes_sorted:
-        return a
+        if value_type == 'C2C':
+            return a
+        else:
+            raise IndexError('list index out of range')
     a = _convert_dtype(a, value_type)
 
     if order == 'A':
